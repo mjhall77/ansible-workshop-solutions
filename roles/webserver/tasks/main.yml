@@ -1,0 +1,43 @@
+---
+# tasks file for apache
+- name: Ensure Desired webserver configured
+  block:
+    - name: Install required packages 
+      yum:
+        name: "{{ packages }}"
+        state: latest
+      notify: restart_httpd
+    
+    - name: Ensure Firewalld service running
+      service:
+        name: firewalld
+        enabled: true
+        state: started
+
+    - name: Enable firewall rules for web services  
+      firewalld:
+        service: "{{ item }}"
+        permanent: true
+        state: enabled
+        immediate: true
+      loop: "{{ firewall_services }}"  
+    
+    - name: Ensure correct index.html content 
+      copy:
+        dest: /var/www/html/index.html
+        content: Webserver managed via ansible role
+
+    - name: Start Webserver service
+      service:
+        name: httpd
+        enabled: true
+        state: started
+
+    - name: Verify webserver is available - expected output is 200
+      uri:
+        url: http://localhost/index.html
+        return_content: yes
+      register: uri_output
+      failed_when: "'ansible' not in uri_output.content"
+
+  when: webserver_present
