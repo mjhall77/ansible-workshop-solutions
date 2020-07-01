@@ -1,0 +1,38 @@
+---
+# tasks file for facts_file
+- name: Verify {{ facts_dir }} exists
+  file:
+    state: directory
+    path: "{{ facts_dir }}"
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Ensure {{ facts_dir }}/{{ facts_file }} file exists
+  copy:
+    src: files/{{ facts_file }}
+    dest: "{{ facts_dir }}/{{ facts_file }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Verify local file exists on host
+  file:
+    path: "{{ local_file }}"
+    state: touch
+    mode: 0660
+    modification_time: preserve
+    access_time: preserve
+  delegate_to: localhost
+
+- name: Write facts to file
+  copy:
+    dest: "{{ local_file }}"
+    content: |
+      Content provied by ansible role facts_file
+      Date Collected:  {{ ansible_date_time.date }}
+      OS Distribution: {{ ansible_distribution }}
+      Hostname: {{ ansible_hostname }}
+      IP address: {{ ansible_default_ipv4.address }}
+  delegate_to: localhost
+
