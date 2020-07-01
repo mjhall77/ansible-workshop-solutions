@@ -1,8 +1,0 @@
----
-# defaults file for apache
-webserver_present: true
-packages:
-  - httpd
-  - firewalld
-firewall_services:
-  - http

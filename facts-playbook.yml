@@ -1,8 +1,0 @@
----
-- name: Facts homework activity 
-  hosts: labs
-  vars:
-    - local_file: /tmp/{{ ansible_hostname}}_system_facts 
-    - facts_file: custom.fact
-  roles:
-    - manage-facts
