@@ -1,3 +1,0 @@
----
-# defaults file for facts_file
-facts_dir: /etc/ansible/facts.d
